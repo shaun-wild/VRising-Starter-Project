@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- VRising Properties -->
+    <PropertyGroup>
+        <VRisingBasePath>Z:\SteamLibrary\steamapps\common\VRising</VRisingBasePath>
+        <ModType>Server</ModType>
+    </PropertyGroup>
+
+    <!-- If Client -->
+    <PropertyGroup Condition="'$(ModType)' == 'Client'">
+        <VRisingPath>$(VRisingBasePath)</VRisingPath>
+        <DefineConstants>$(DefineConstants);CLIENT</DefineConstants>
+    </PropertyGroup>
+
+    <!-- If Server -->
+    <PropertyGroup Condition="'$(ModType)' == 'Server'">
+        <VRisingPath>$(VRisingBasePath)\VRising_Server</VRisingPath>
+        <DefineConstants>$(DefineConstants);SERVER</DefineConstants>
+    </PropertyGroup>
+
+    <!-- Generic Properties -->
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Description>V-Rising Starter Project</Description>
+        <Version>0.0.1</Version>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+        <ExcludeGeneratedDebugSymbol>False</ExcludeGeneratedDebugSymbol>
+
+        <PluginsPath>$(VRisingPath)\BepInEx\plugins</PluginsPath>
+        <VCFReloadPath>$(VRisingPath)\BepInEx\VCF-Reloadable-Debugging</VCFReloadPath>
+        <WetstonePluginsPath>$(VRisingPath)\BepInEx\WetstonePlugins</WetstonePluginsPath>
+        <UnityVersion>2020.3.46f1</UnityVersion>
+        <PackageId>VRisingStarterProject</PackageId>
+        <RootNamespace>VRisingStarterProject</RootNamespace>
+    </PropertyGroup>
+
+    <!-- Copy DDLs -->
+    <Target Name="CopyDLLs" AfterTargets="Build">
+        <!-- Copy the Client Plugin -->
+        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll;$(TargetDir)$(ProjectName).pdb" Condition="'$(ModType)' == 'Client'" DestinationFolder="$(WetstonePluginsPath)" />
+        <Copy SourceFiles="$(ProjectDir)libs\Wetstone.dll" DestinationFolder="$(PluginsPath)" Condition="'$(ModType)' == 'Client'" ContinueOnError="true" Retries="0" />
+
+        <!-- Server the Client Plugin -->
+        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll;$(TargetDir)$(ProjectName).pdb" Condition="'$(ModType)' == 'Server'" DestinationFolder="$(VCFReloadPath)" />
+        <Copy SourceFiles="$(ProjectDir)libs\Wetstone.dll" DestinationFolder="$(PluginsPath)" Condition="'$(ModType)' == 'Server'" ContinueOnError="true" Retries="0" />
+
+        <Message Text="$(ModType) files copied to $(PluginsPath)" Importance="High" />
+    </Target>
+
+    <Target Name="ValidateModType" BeforeTargets="Build">
+        <Error Condition="'$(ModType)' != 'Client' And '$(ModType)' != 'Server'" Text="Invalid ModType value. Must be either 'Client' or 'Server'." />
+    </Target>
+
+    <ItemGroup>
+        <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be*" />
+        <PackageReference Include="BepInEx.Core" Version="6.0.0-be*" IncludeAssets="compile" />
+        <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+        <PackageReference Include="VRising.Unhollowed.Client" Version="0.6.1.*" />
+
+        <!-- Server dependencies -->
+        <PackageReference Condition="'$(ModType)' == 'Server'" Include="VRising.VampireCommandFramework" Version="0.5.3" />
+        
+        <!-- Client depdenencies -->
+        <Reference Condition="'$(ModType)' == 'Client'" Include="Wetstone">
+            <HintPath>./lib/Wetstone.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+</Project>

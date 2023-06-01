@@ -1,6 +1,7 @@
 # V-Rising Starter Project
 
-A super simple bare-bones project with [Vampire Command Framework](https://github.com/decaprime/VampireCommandFramework/) and [Wetstone](https://github.com/molenzwiebel/Wetstone) pre-setup.
+A super simple bare-bones project with [Vampire Command Framework](https://github.com/decaprime/VampireCommandFramework/) 
+, [Wetstone](https://github.com/molenzwiebel/Wetstone) and [Harmony](https://github.com/pardeike/Harmony) pre-setup.
 
 ## Getting started
 
@@ -22,6 +23,11 @@ which of these you would like to use by modifying `YourProjectName.csproj`.
 ### Final Steps
 
 Update this README to better suit your project, if you're open sourcing then make sure to include a nice README!
+
+### Todos
+
+- Remove the binaries in `lib` in favour of a better solution.
+- Allow the project to be built without Wetstone if being used in production.
 
 ## Contributing
 

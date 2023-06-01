@@ -30,6 +30,7 @@
         <PluginsPath>$(VRisingPath)\BepInEx\plugins</PluginsPath>
         <VCFReloadPath>$(VRisingPath)\BepInEx\VCF-Reloadable-Debugging</VCFReloadPath>
         <WetstonePluginsPath>$(VRisingPath)\BepInEx\WetstonePlugins</WetstonePluginsPath>
+        
         <UnityVersion>2020.3.46f1</UnityVersion>
         <PackageId>VRisingStarterProject</PackageId>
         <RootNamespace>VRisingStarterProject</RootNamespace>

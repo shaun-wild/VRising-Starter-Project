@@ -1,6 +1,6 @@
 # V-Rising Starter Project
 
-A super simple bare-bones project with [Vampire Command Framework](https://github.com/decaprime/VampireCommandFramework/) 
+A super simple bare-bones project with [Vampire Command Framework](https://github.com/decaprime/VampireCommandFramework/)
 , [Wetstone](https://github.com/molenzwiebel/Wetstone) and [Harmony](https://github.com/pardeike/Harmony) pre-setup.
 
 ## Getting started
@@ -8,8 +8,8 @@ A super simple bare-bones project with [Vampire Command Framework](https://githu
 ### Rename project
 
 - Rename `VRisingStarterProject.csproj` to your project name.
-- perform a project-wide search and replace 
-for `VRisingStarterProject` and replace it with your project name.
+- perform a project-wide search and replace
+  for `VRisingStarterProject` and replace it with your project name.
 - Rename the root folder of this project to your project name.
 
 ### Setup Auto-Configuration
@@ -17,8 +17,18 @@ for `VRisingStarterProject` and replace it with your project name.
 This project is automatically configured to use VCF on the server and Wetstone on the client, you can decide
 which of these you would like to use by modifying `YourProjectName.csproj`.
 
-1. Set the `<ModType>` property, this can either be `Server` or `Client`.
-2. Update the `<VRisingBasePath>` property, this should point to your V-Rising base path.
+1. Update the `<VRisingBasePath>` property, this should point to your V-Rising base path.
+2. Set the `<ModType>` property, this can either be `Server` or `Client`.
+3. Update the `VCF`, `Wetstone` and `Harmony` properties to either `true` or `false`, depending on
+   whether you'd like them or not.
+
+#### Dependencies
+
+| Dependency | Description                                                                                                                                                        | Mod type       |
+|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| VCF        | [Vampire Command Framework](https://github.com/decaprime/VampireCommandFramework/), supports hot reloading and has an easy-to-use API for issuing server commands. | Server         |
+| Wetstone   | [Wetstone](https://github.com/molenzwiebel/Wetstone) is used for its hot reloading on the client, as well as providing some useful utilities                       | Server, Client |
+| Harmony    | [Harmony](https://github.com/pardeike/Harmony) is a powerful plugin, allows for patching and hooking into methods.                                                 | Server, Client |
 
 ### Final Steps
 
@@ -27,7 +37,6 @@ Update this README to better suit your project, if you're open sourcing then mak
 ### Todos
 
 - Remove the binaries in `lib` in favour of a better solution.
-- Allow the project to be built without Wetstone if being used in production.
 
 ## Contributing
 

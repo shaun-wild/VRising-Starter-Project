@@ -2,30 +2,41 @@
 using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
-using HarmonyLib;
-using Il2CppSystem;
 using Unity.Entities;
+using Exception = System.Exception;
+
+#if VCF
 using VampireCommandFramework;
 using VampireCommandFramework.Breadstone;
-using Exception = System.Exception;
+#endif
+
+#if HARMONY
+using HarmonyLib;
+#endif
 
 namespace VRisingStarterProject;
 
 [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-#if SERVER
+
+#if VCF
 [BepInDependency("gg.deca.VampireCommandFramework")]
 [Reloadable]
-#else
+#endif
+
+#if WETSTONE
 [BepInDependency("xyz.molenzwiebel.wetstone")]
 [Wetstone.API.Reloadable]
 #endif
+
 public class Plugin : BasePlugin
 {
     public static ManualLogSource Logger;
     private static World _serverWorld;
     private static EntityManager _em => Server.EntityManager;
-    private Harmony _harmony;
 
+#if HARMONY
+    private Harmony _harmony;
+#endif
 
     public static World Server
     {
@@ -39,24 +50,24 @@ public class Plugin : BasePlugin
 
     public override void Load()
     {
-#if SERVER
+#if VCF
         CommandRegistry.RegisterAll();
-        Log.LogInfo("Loaded Server plugin!");
-#else
-        Log.LogInfo("Loaded Client Plugin!");
 #endif
         Logger = Log;
         Log.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+#if HARMONY
         _harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+#endif
     }
 
     public override bool Unload()
     {
-#if SERVER
+#if VCF
         CommandRegistry.UnregisterAssembly();
 #endif
-        Log.LogInfo($"Unloading harmony: {_harmony}");
-        _harmony.UnpatchSelf();
+#if HARMONY
+                _harmony.UnpatchSelf();
+#endif
         return true;
     }
 
@@ -68,16 +79,11 @@ public class Plugin : BasePlugin
 
         return null;
     }
-    
-    #if SERVER
+
+#if VCF
     [Command("test")]
     public void TestCommand(ChatCommandContext ctx) {
         ctx.Reply("This is a test!");
     }
-    #endif
-
-    public Type GetType(System.Type type)
-    {
-        return Type.GetType(type.AssemblyQualifiedName);
-    }
+#endif
 }

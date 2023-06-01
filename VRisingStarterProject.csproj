@@ -1,9 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <!-- VRising Properties -->
     <PropertyGroup>
         <VRisingBasePath>Z:\SteamLibrary\steamapps\common\VRising</VRisingBasePath>
         <ModType>Server</ModType>
+        
+        <Wetstone>true</Wetstone>
+        <VCF>true</VCF>
+        <Harmony>true</Harmony>
     </PropertyGroup>
 
     <!-- If Client -->
@@ -31,26 +34,36 @@
         <VCFReloadPath>$(VRisingPath)\BepInEx\VCF-Reloadable-Debugging</VCFReloadPath>
         <WetstonePluginsPath>$(VRisingPath)\BepInEx\WetstonePlugins</WetstonePluginsPath>
         
-        <UnityVersion>2020.3.46f1</UnityVersion>
         <PackageId>VRisingStarterProject</PackageId>
         <RootNamespace>VRisingStarterProject</RootNamespace>
+        
+        <DefineConstants Condition="'$(Wetstone)' == 'true'">$(DefineConstants);WETSTONE</DefineConstants>
+        <DefineConstants Condition="'$(VCF)' == 'true'">$(DefineConstants);VCF</DefineConstants>
+        <DefineConstants Condition="'$(Harmony)' == 'true'">$(DefineConstants);HARMONY</DefineConstants>
     </PropertyGroup>
-
-    <!-- Copy DDLs -->
+    
+    <!-- Copy Plugin DLLs -->
     <Target Name="CopyDLLs" AfterTargets="Build">
-        <!-- Copy the Client Plugin -->
-        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll;$(TargetDir)$(ProjectName).pdb" Condition="'$(ModType)' == 'Client'" DestinationFolder="$(WetstonePluginsPath)" />
-        <Copy SourceFiles="$(ProjectDir)libs\Wetstone.dll" DestinationFolder="$(PluginsPath)" Condition="'$(ModType)' == 'Client'" ContinueOnError="true" Retries="0" />
-
-        <!-- Server the Client Plugin -->
-        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll;$(TargetDir)$(ProjectName).pdb" Condition="'$(ModType)' == 'Server'" DestinationFolder="$(VCFReloadPath)" />
-        <Copy SourceFiles="$(ProjectDir)libs\Wetstone.dll" DestinationFolder="$(PluginsPath)" Condition="'$(ModType)' == 'Server'" ContinueOnError="true" Retries="0" />
-
-        <Message Text="$(ModType) files copied to $(PluginsPath)" Importance="High" />
+        <!-- Copy DLLs directly to plugins folder if not using VCF or Wetstone -->
+        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll;$(TargetDir)$(ProjectName).pdb" DestinationFolder="$(PluginsPath)" Condition="'$(VCF)' != 'true' And '$(Wetstone)' != 'true'" />
+        
+        <!-- Copy respective reloadable DLLs if using VCF or Wetstone -->
+        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll;$(TargetDir)$(ProjectName).pdb" DestinationFolder="$(WetstonePluginsPath)" Condition="'$(Wetstone)' == 'true'" />
+        <Copy SourceFiles="$(TargetDir)$(ProjectName).dll;$(TargetDir)$(ProjectName).pdb" DestinationFolder="$(VCFReloadPath)" Condition="'$(VCF)' == 'true'" />
+        
+        <!-- Copy VCF or Wetstone DLLs if they're being used -->
+        <Copy SourceFiles="$(ProjectDir)libs\VampireCommandFramework.dll" DestinationFolder="$(PluginsPath)" Condition="'$(VCF)' == 'true'" ContinueOnError="true" Retries="0" />
+        <Copy SourceFiles="$(ProjectDir)libs\Wetstone.dll" DestinationFolder="$(PluginsPath)" Condition="'$(Wetstone)' == 'true'" ContinueOnError="true" Retries="0" />
+        
+        <Message Text="Files copied to $(PluginsPath)" Importance="High" />
     </Target>
 
-    <Target Name="ValidateModType" BeforeTargets="Build">
+    <Target Name="ValidateCustomProperties" BeforeTargets="Build">
         <Error Condition="'$(ModType)' != 'Client' And '$(ModType)' != 'Server'" Text="Invalid ModType value. Must be either 'Client' or 'Server'." />
+        <Error Condition="'$(VCF)' != 'true' And '$(VCF)' != 'false'" Text="Invalid value for VCF. Must be either 'true' or 'false'." />
+        <Error Condition="'$(Wetstone)' != 'true' And '$(Wetstone)' != 'false'" Text="Invalid value for Wetstone. Must be either 'true' or 'false'." />
+        <Error Condition="'$(Harmony)' != 'true' And '$(Harmony)' != 'false'" Text="Invalid value for Harmony. Must be either 'true' or 'false'." />
+        <Warning Condition="'$(ModType)' == 'Client' And '$(VCF)' == 'true'" Text="VCF should not be set to true with the 'Client' ModType." />
     </Target>
 
     <ItemGroup>
@@ -59,11 +72,9 @@
         <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
         <PackageReference Include="VRising.Unhollowed.Client" Version="0.6.1.*" />
 
-        <!-- Server dependencies -->
-        <PackageReference Condition="'$(ModType)' == 'Server'" Include="VRising.VampireCommandFramework" Version="0.5.3" />
+        <PackageReference Condition="'$(VCF)' == 'true'" Include="VRising.VampireCommandFramework" Version="0.5.3" />
         
-        <!-- Client depdenencies -->
-        <Reference Condition="'$(ModType)' == 'Client'" Include="Wetstone">
+        <Reference Condition="'$(Wetstone)' == 'true'" Include="Wetstone">
             <HintPath>./lib/Wetstone.dll</HintPath>
         </Reference>
     </ItemGroup>
